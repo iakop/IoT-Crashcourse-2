@@ -1,0 +1,873 @@
+% !TeX TS-program = xelatex -synctex=1 -interaction=nonstopmode -shell-escape -output-directory=build %.tex
+\documentclass[aspectratio=169]{beamer}
+
+% All my packages are specified and set up in include/format:
+\usepackage{include/format}
+
+\title{IoT Crashcourse 2}
+\subtitle{Sensordata og Prototyper}
+
+\author{Jacob Bechmann Pedersen}
+\institute{Bechmann Engineering ApS}
+\date{\today}
+
+%% Reference settings:
+\renewcommand{\figurename}{Figur}
+\renewcommand{\tablename}{Tabel}
+\renewcommand{\refname}{Referenceliste}
+\renewcommand{\contentsname}{Indhold}
+\renewcommand{\listfigurename}{Figurliste}
+\renewcommand{\listtablename}{Tabelliste}
+\renewcommand{\lstlistlistingname}{Kodeliste}
+
+\begin{document}
+
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}{Indhold}
+	\begin{columns}
+	\begin{column}{0.6\textwidth}
+		\begin{fitBox}
+			\tableofcontents{}
+		\end{fitBox}
+	\end{column}
+	\begin{column}{0.4\textwidth}
+		\centering
+		\begin{figure}
+  			\includesvg[height=0.6\textheight]{assets/svg/ESP32-DevkitC-v4.svg}
+  			\caption{ESP32 DevkitC v4, boardet vi skal arbejde med}
+  			\label{fig:esp32}
+		\end{figure}
+	\end{column}
+	\end{columns}	
+\end{frame}
+
+\section{Hvem er jeg?}
+\begin{frame}[fragile]{Hvem er jeg?}
+\begin{columns}
+	\begin{column}{0.4\textwidth}
+		\begin{center}
+		\roundedGfx{0.8\textwidth}{assets/pictures/portrait.png}
+		\vspace{0.05\textwidth}
+		\begin{columns}
+			\begin{column}{0.33\textwidth}
+	  			\roundedGfx{\textwidth}{assets/pictures/shiny-hunter.jpg}
+			\end{column}
+			\begin{column}{0.33\textwidth}
+	  			\roundedGfx{\textwidth}{assets/pictures/hackrf.jpg}
+			\end{column}
+			\begin{column}{0.33\textwidth}
+  				\roundedGfx{\textwidth}{assets/pictures/wifi-picture.jpg}
+			\end{column}
+		\end{columns}
+		\end{center}
+	\end{column}	
+
+	\begin{column}{0.6\textwidth}
+	\begin{textBox}
+		Jacob Bechmann Pedersen
+			\begin{itemize}
+				\item Kursus-/Foredragsholder om embedded elektronik, programmering og Arduino
+				\item Tidl. Embedded electronics engineer hos DTU Elektro, Automation and Control
+					\begin{itemize}
+						\item Robotter, embedded Linux, autonome systemer
+					\end{itemize}
+				\item Tidl. Embedded software developer hos Oticon
+					\begin{itemize}
+						\item Applikationer til høreapparaternes OS, unit- og device testing
+					\end{itemize}
+				\item Underviser på MakerCamp
+					\begin{itemize}
+						\item "Inventors" linje - 12-16 årige
+					\end{itemize}
+				\item Frivillig i Coding Pirates 2016-2018
+				\item Electronic Design Engineer (AU, 2019)
+				\item Startede med Arduino i 2014
+			\end{itemize}
+	\end{textBox}
+	\end{column}
+\end{columns}	
+\end{frame}
+
+\section{Formål}
+\begin{frame}{Formål}
+	\begin{textBox}
+		\begin{itemize}
+			\item At dykke ned i diverse komponenter
+			\begin{itemize}
+				\item Deres relevans for IoT løsninger
+				\item Hvordan de fungerer:
+				\begin{itemize}
+					\item Eksempelkredsløb - på breadboard
+					\item Eksempelkode - med MQTT, HTTP og Websockets
+				\end{itemize}
+			\end{itemize}
+			\item Bygge og programmere simple prototyper på IoT løsninger
+			\begin{itemize}
+				\item På ESP32 med Arduino framework
+				\item Vha. PlatformIO og VSCode
+			\end{itemize}
+		\end{itemize}
+	\end{textBox}
+\end{frame}
+
+\section{Ressourcer}
+\begin{frame}{Ressourcer}
+	\begin{textBox}
+	Nogle nyttige links:
+		\begin{itemize}
+			\item \url{https://github.com/iakop/IoT-Crashcourse-2}
+			\begin{itemize}
+				\item Præsentation og kode til denne workshop
+			\end{itemize}
+			\item \url{https://code.visualstudio.com/}
+			\begin{itemize}
+				\item Download af Visual Studio Code
+			\end{itemize}
+			\item \url{https://platformio.org/}
+			\begin{itemize}
+				\item Download af PlatformIO
+			\end{itemize}
+			\item \url{https://www.arduino.cc/en/reference}
+			\begin{itemize}
+				\item Reference for keywords i Arduino
+			\end{itemize}
+			\item \url{http://mqtt-explorer.com/}
+			\begin{itemize}
+				\item MQTT client til at udforske topics på en broker
+			\end{itemize}
+			\item \url{https://nodered.org/}
+			\begin{itemize}
+				\item Editorbaseret løsning til flowbaseret IoT programmering
+			\end{itemize}
+		\end{itemize}
+	\end{textBox}
+\end{frame}
+
+\section{Setup af VSCode og PlatformIO}
+\begin{frame}
+	\sectiontitle{assets/pictures/vscode-logo.png}{\insertsectionhead}
+\end{frame}
+
+\subsection{Setup VSCode}
+\begin{frame}{Setup VSCode}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+  			\roundedGfx{\textwidth}{assets/pictures/vscode-dl.png}
+  			\caption{\tthigh{Visual Studio Code} downloadsiden, har versioner til mange forskellige arkitekturer, typisk vil default knappen hente den korrekte installer}
+  			\label{fig:vscode-dl}
+		\end{figure}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{textBox}
+			\begin{itemize}
+				\item Download Visual Studio Code fra linket:
+				\begin{itemize}
+					 \item \small\url{https://code.visualstudio.com/Download}
+				\end{itemize}
+				\item \tthigh{Tryk på den store knap for dit OS}
+				\item Kør installationsprocessen, dette skulle ske uden stort besvær
+				\item \ttwarn{HVIS} det ikke virker, prøv en af disse:
+				\begin{itemize}
+					\item Windows:
+					\begin{itemize}
+						\item Hvis du ikke har admin-rettigheder, prøv at hente \tthigh{User Installer} (typisk x64-versionen)
+					\end{itemize}
+					\item Linux:
+					\begin{itemize}
+						\item Hvis du ikke bruger Ubuntu, tjek din package managers repositorier, eller prøv \tthigh{CLI} installeren
+					\end{itemize}
+					\item Mac OS X:
+					\begin{itemize}
+						\item Prøv \tthigh{Universal .zip}, eller måske App Store?  \includegraphics[height=12pt, keepaspectratio=true]{assets/pictures/shrug.png}
+					\end{itemize}
+				\end{itemize}
+			\end{itemize}
+		\end{textBox}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\subsection{Setup PlatformIO}
+\begin{frame}{Setup PlatformIO}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{textBox}
+			\begin{itemize}
+				\item Når VSCode er installeret og startet op, navigér til \tthigh{Extensions} fanen
+				\begin{itemize}
+					\item Her, søg efter PlatformIO
+					\item Vælg extensionen på figuren, og tryk \tthigh{install}
+					\item VSCode installerer og indstiller automatisk PlatformIO
+				\end{itemize}
+			\end{itemize}
+		\end{textBox}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+  			\roundedGfx{0.75\textwidth}{assets/pictures/pio-dl.png}
+  			\caption{Installion af \tthigh{PlatformIO} i VSCode}
+  			\label{fig:pio-dl}
+		\end{figure}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Setup PlatformIO}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+  			\includegraphics[width=\textwidth,keepaspectratio=true]{assets/pictures/pio-menu.png}
+  			\caption{PlatformIO standard view, med \tthigh{Home}, \tthigh{Projects} og \tthigh{Libraries}, samt Quick Access}
+  			\label{fig:pio-menu}
+		\end{figure}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{textBox}
+			\begin{itemize}
+				\item PlatformIO extensionen kan åbnes ved at klikke på fanen PlatformIO \includesvg[height=12pt, keepaspectratio=true]{assets/svg/pio-logo.svg}
+				\item Herunder findes en række muligheder, de vigtigste:
+				\begin{enumerate}
+					\item Open / Home
+					\begin{itemize}
+						\item Hovedsiden til PlatformIO, med quick access til og faner til resten af funktionerne
+					\end{itemize}
+					\item Projects \& Configurations \\/ Projects
+					\begin{itemize}
+						\item Projektside, til at oprette og indstille softwareprojekter
+					\end{itemize}
+					\item Libraries
+					\begin{itemize}
+						\item Til søgning og tilføjelse af Libraries til PlatformIO projekter
+					\end{itemize}
+				\end{enumerate}
+			\end{itemize}
+		\end{textBox}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\section{Setup ESP32 Projekt i PlatformIO}
+\begin{frame}
+	\sectiontitle{assets/svg/pio-logo.svg}{\insertsectionhead}
+\end{frame}
+
+\begin{frame}{Setup ESP32 Projekt i PlatformIO}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{textBox}
+			\begin{itemize}
+				\item Klik på fanen \tthigh{Projects} for at få visningen af projekter frem
+				\item For at skabe et nyt projekt, klik på \tthigh{Create New Project}
+			\end{itemize}
+		\end{textBox}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+  			\includegraphics[width=\textwidth,keepaspectratio=true]{assets/pictures/pio-project.png}
+  			\caption{\tthigh{Projects} fanen i PlatformIO, her kan projekter oprettes og redigeres i GUI'en}
+  			\label{fig:pio-project}
+		\end{figure}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Setup ESP32 Projekt i PlatformIO}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+  			\includegraphics[height=0.7\textheight,keepaspectratio=true]{assets/pictures/pio-project-2.png}
+  			\caption{\tthigh{Project Wizard} dialogen i PlatformIO, med indstillinger for navn, board og framework}
+  			\label{fig:pio-project2}
+		\end{figure}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{textBox}
+			\begin{itemize}
+				\item Der vil komme en \tthigh{Project Wizard} dialog
+				\item Den har 3 felter, som i vores tilfælde udfyldes således:
+				\begin{itemize}
+					\item Name
+					\begin{itemize}
+						\item Et passende navn til projektet, eks. "\tthigh{coolnewproject}"
+					\end{itemize}
+					\item Board
+					\begin{itemize}
+						\item hhv. \tthigh{DOIT ESP32 DEVKIT V1} eller \tthigh{Ai Thinker ESP32-CAM}
+					\end{itemize}
+					\item Framework
+					\begin{itemize}
+						\item \tthigh{Arduino}
+					\end{itemize}
+					\item Afslut ved at trykke \tthigh{Finish}
+				\end{itemize}
+			\end{itemize}
+		\end{textBox}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Setup ESP32 Projekt i PlatformIO}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{textBox}
+			\begin{itemize}
+				\item PlatformIO vil generere et projekt og automatisk sætte værktøjerne op
+				\begin{itemize}
+					\item Dette kræver en internetforbindelse
+				\end{itemize}
+				\item Når det er færdigt, indlæses \tthigh{platformio.ini}
+				\begin{itemize}
+					\item Denne fil indeholder indstillingerne for projektet og kan redigeres i hånden
+				\end{itemize}
+				\item På siden ses nogle \tthigh{Project Tasks}:
+				\begin{enumerate}
+					\item Build
+					\begin{itemize}
+						\item Bygger et image til at programmere hardwaren med
+					\end{itemize}
+					\item Upload
+					\begin{itemize}
+						\item Uploader imaget til hardwaren gennem en automatisk detekteret USB forbindelse
+					\end{itemize}
+					\item Monitor
+					\begin{itemize}
+						\item Overvåger UART forbindelsen til hardwaren (Baud raten kan indstilles i \tthigh{platformio.ini})
+					\end{itemize}
+					\item Build Filesystem Image
+					\begin{itemize}
+						\item Bygger image af et filsystem til hardwaren (ligger i \tthigh{data} mappen under projektet)
+						\item \tthigh{data} mappen skal oprettes manuelt
+						\item Filsystemet kan specificeres i \tthigh{platformio.ini}
+					\end{itemize}
+					\item Upload Filesystem Image
+					\begin{itemize}
+						\item Uploader det byggede filsystem til boardet
+						\item \ttwarn{VIGTIGT}: Monitor kan ikke være aktivt under upload
+					\end{itemize}
+				\end{enumerate}
+			\end{itemize}
+		\end{textBox}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+  			\includegraphics[width=\textwidth,keepaspectratio=true]{assets/pictures/pio-project-3.png}
+  			\caption{Åbent projekt i PlatformIO, viser \tthigh{platformio.ini} samt hvilke \tthigh{Project Tasks} der er mulige for projektet}
+  			\label{fig:pio-project3}
+		\end{figure}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\subsection{Tilføj Libraries til ESP32 Projekt}
+\begin{frame}{Tilføj Libraries til ESP32 Projekt}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+  			\includegraphics[width=\textwidth,keepaspectratio=true]{assets/pictures/pio-libraries.png}
+  			\caption{\tthigh{Libraries} fanen i PlatformIO. Her kan libraries søges frem og tilføjes til projekter}
+  			\label{fig:pio-libraries}
+		\end{figure}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{textBox}
+			\begin{itemize}
+				\item For at tilføje eksterne libraries til ens projekt, kan man man under \tthigh{Libraries} fanen søge efter libraries
+				\item De kan fremsøges under \tthigh{Registry}
+				\item Herefter klik på det relevante library
+			\end{itemize}
+		\end{textBox}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Tilføj Libraries til ESP32 Projekt}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{textBox}
+			\begin{itemize}
+				\item Inde under det pågældende library kan der findes:
+				\begin{itemize}
+					\item Eksempler
+					\item Headers
+					\item mm.
+				\end{itemize}
+				\item Klik \tthigh{Add to Project} for at tilføje den til et projekt
+			\end{itemize}
+		\end{textBox}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+  			\includegraphics[width=\textwidth,keepaspectratio=true]{assets/pictures/pio-libraries-2.png}
+  			\caption{\tthigh{DHT sensor library} i PlatformIO. Kan tilføjes til projekter, og understøtter Arduino frameworket}
+  			\label{fig:pio-libraries-2}
+		\end{figure}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Tilføj Libraries til ESP32 Projekt}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+  			\includegraphics[width=\textwidth,keepaspectratio=true]{assets/pictures/pio-libraries-3.png}
+  			\caption{\tthigh{Add project dependency} dialogen i PlatformIO. Har vælges hvilket projekt der skal tilføjes et library}
+  			\label{fig:pio-libraries-3}
+		\end{figure}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{textBox}
+			\begin{itemize}
+				\item Der åbnes en \tthigh{Add project dependency} dialog
+				\item Vælg under \tthigh{Select a project}, hvilket projekt der skal bruge librariet
+				\item Klik \tthigh{Add}
+				\item PlatformIO tilføjer automatisk en \tthigh{lib\_deps} dependency i \tthigh{platformio.ini}, og sætter librariet op
+			\end{itemize}
+		\end{textBox}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\section{Sensordata - opsamling og visning}
+\begin{frame}
+	\sectiontitle{assets/setups/sensordata.svg}{\insertsectionhead}
+\end{frame}
+
+\subsection{Forklaring}
+\begin{frame}{Sensordata - opsamling og visning}
+\begin{columns}
+	\begin{column}{0.6\textwidth}
+		\begin{textBox}
+			\begin{itemize}
+				\item Det første eksempel handler om opsamling og samling af data
+				\item Formålet er at samle datapunkter, sende dem til fælles broker, og vise dem
+				\item Til dette vil der blive brugt:
+				\begin{itemize}
+					\item DHT11
+					\begin{itemize}
+						\item En temperatur- og fugtighedssensor
+						\item Kan læse mellem 0-50°C
+						\item Mellem 20-90\%RH
+					\end{itemize}
+					\item MQ-135
+					\begin{itemize}
+						%\begin{itemize}
+							\item CO2
+							\item CO (kulilte)
+							\item Alkohol
+							\item Toluen (opløsningsmiddel i lim og maling)
+							\item NH4 (Ammonium)
+							\item Acetone
+						%\end{itemize}
+						\item Måler én ad gangen bestemt af applikationsområdet
+					\end{itemize}
+					\item LCD
+					\begin{itemize}
+						\item Kan vise data fra egen og andre enheder
+					\end{itemize}
+					\item MQTT 
+					\begin{itemize}
+						\item Publish-subscribe baseret protokol mellem enheder og central broker
+					\end{itemize}
+				\end{itemize}
+			\end{itemize}
+		\end{textBox}
+	\end{column}
+	\begin{column}{0.4\textwidth}
+		\centering
+		\captionsetup{format=tcbcaptionsmall}
+		\begin{columns}
+			\begin{column}{0.45\textwidth}
+				\begin{figure}[height=0.2\textheight]
+  					\includegraphics[height=0.2\textheight,keepaspectratio=true]{assets/pictures/dht11.png}
+  					\caption{DHT11 temperatur- og fugtighedssensor}
+  					\label{fig:dht11}
+				\end{figure}
+			\end{column}
+			\begin{column}{0.45\textwidth}
+				\begin{figure}[height=0.2\textheight]
+  					\includegraphics[height=0.2\textheight,keepaspectratio=true]{assets/pictures/mq-135.png}
+  					\caption{MQ-135 gassensor}
+  					\label{fig:mq-135}
+				\end{figure}
+			\end{column}
+		\end{columns}
+		\begin{columns}
+		\begin{column}{0.45\textwidth}
+				\begin{figure}[height=0.2\textheight]
+  					\includegraphics[height=0.2\textheight,keepaspectratio=true]{assets/pictures/lcd-i2cmodule.png}
+  					\caption{LCD med I2C modul}
+  					\label{fig:lcd-i2cmodule}
+				\end{figure}
+			\end{column}
+			\begin{column}{0.45\textwidth}
+				\begin{figure}[height=0.2\textheight]
+  					\includesvg[height=0.2\textheight]{assets/svg/mqtt-logo.svg}
+  					\caption{MQTT logo
+  					\captionline \textbf{Kilde:} \url{https://en.wikipedia.org/wiki/File:Mqtt-hor.svg}
+  					\captionline \textbf{Licens:} Public Domain}
+  					\label{fig:mqtt-logo}
+				\end{figure}
+			\end{column}
+		\end{columns}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\subsection{Eksempel}
+\begin{frame}{Sensordata - opsamling og visning}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{textBox}
+		\begin{itemize}
+			\item Breadboard opstillingen ser således ud
+			\begin{itemize}
+				\item Et ESP32 board
+				\item Et DHT11 modul
+				\item Et LCD med I2C modul
+				\item En MQ-135 sensor
+				\item En spændingdeler á 1,8{\textsf{k$\Omega$}} og 3,3{\textsf{k$\Omega$}}
+				\item En 12V-5V DC-DC converter
+				\item En DC strømforsyning
+			\end{itemize}
+			\item Programmet gennemgår vi i fællesskab
+			%\captionbreak
+			\item Kildefiler kan hentes på:
+			\begin{itemize}
+				\item \tiny\url{https://github.com/iakop/IoT-Crashcourse-2/tree/master/examples/sensordata}
+			\end{itemize}
+		\end{itemize}
+		\end{textBox}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\centering
+		\begin{figure}
+  			\includesvg[width=\textwidth]{assets/setups/sensordata.svg}
+  			\caption{Breadboard setup med ESP32, DHT11, MQ-135, Buck converter og LCD}
+  			\label{fig:sensordata}
+		\end{figure}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\subsection{Indlæsning af ESP32 Projekt i PlatformIO}
+\begin{frame}{Indlæsning af ESP32 Projekt i PlatformIO}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+  			\includegraphics[width=\textwidth,keepaspectratio=true]{assets/pictures/pio-project-4.png}
+  			\caption{\tthigh{Projects} fanen i PlatformIO, med markeret indstilling for at indlæse et projekt fra disk}
+  			\label{fig:pio-project4}
+		\end{figure}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{textBox}
+			\begin{itemize}
+				\item Projekterne i denne workshop bruger specifikke libraries og indstillinger
+				\item For at have dem sat op hurtigt, kan hele projekter indlæses fra Github repoet
+				\item Download hele workshoppens materialer her:
+				\begin{itemize}
+					\item \small\url{https://github.com/iakop/IoT-Crashcourse-2/archive/refs/heads/master.zip}
+				\end{itemize}
+				\item Pak dem ud hvor de kan findes
+				\item Under \tthigh{Projects} fanen, klik \tthigh{Add Existing}
+			\end{itemize}
+		\end{textBox}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Indlæsning af ESP32 Projekt i PlatformIO}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{textBox}
+			\begin{itemize}
+				\item I \tthigh{Open PlatformIO Project} dialogen, åbn mappen hvor eksemplerne ligger
+				\item Hvis \tthigh{Open} knappen f.eks. siger \tthigh{Open "sensordata"} står dialogen det rigtige sted
+				\item Klik \tthigh{Open} knappen
+			\end{itemize}
+		\end{textBox}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+  			\includegraphics[height=0.7\textheight,keepaspectratio=true]{assets/pictures/pio-project-5.png}
+  			\caption{\tthigh{Open PlatformIO Project} dialogen i PlatformIO. For at åbne et projekt, skal man finde den på disken, og stå i mappen e.g.: \tthigh{Downloads/IoT-Crashcourse-2-master/examples/sensordata}}
+  			\label{fig:pio-project5}
+		\end{figure}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Indlæsning af ESP32 Projekt i PlatformIO}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+  			\includegraphics[width=\textwidth,keepaspectratio=true]{assets/pictures/pio-projects-6.png}
+  			\caption{\tthigh{platformio.ini} for \tthigh{sensordata} projektet. Bemærk \tthigh{monitor-speed}, \tthigh{filesystem} og \tthigh{lib\_deps} er defineret}
+  			\label{fig:pio-project6}
+		\end{figure}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{textBox}
+			\begin{itemize}
+				\item Når projektet er indlæst vises \tthigh{platformio.ini} for projektet
+				\item Værktøjerne og indstillingerne for projektet sættes automatisk op af PlatformIO
+			\end{itemize}
+		\end{textBox}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\subsection{MQTT Client til dataovervågning}
+\begin{frame}{MQTT Client til dataovervågning}
+\begin{columns}
+\begin{column}{0.6\textwidth}
+		\centering
+		\begin{figure}
+  			\includegraphics[width=\textwidth]{assets/pictures/mqtt-explorer.png}
+  			\caption{MQTT Explorer Connection dialogvindue, her med forbindelsen til \tthigh{mqtt.bechmann.xyz} defineret}
+  			\label{fig:mqtt-explorer}
+		\end{figure}
+	\end{column}
+	\begin{column}{0.4\textwidth}
+		\begin{textBox}
+		\begin{itemize}
+			\item MQTT Explorer kan bruges til at tjekke topics:
+			\begin{itemize}
+				\item \small\url{http://mqtt-explorer.com/}
+			\end{itemize}
+			\item Indstillinger for forbindelse til workshoppens \ttwarn{offentlige} server:
+			\begin{itemize}
+				\item Name: \tthigh{Bechmann} (Valgfri)	
+				\item Validate certificate:	 \tthigh{off} 
+				\begin{itemize}
+					\item \ttlow{Bug i MQTT Explorers cert storage forhindrer validering}
+				\end{itemize}
+				\item Encryption (tls):	 \tthigh{on} 
+				\item Protocol: \tthigh{mqtt://}
+				\item Host: \tthigh{mqtt.bechmann.xyz}
+				\item Port: \tthigh{8883}
+				\item Username: \ttlow{blank}
+				\item Password: \ttlow{blank}
+			\end{itemize}
+		\end{itemize}
+		\end{textBox}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\section{Adgangskontrol med RFID og elektronisk lås}
+\begin{frame}
+	\sectiontitle{assets/setups/rfidlock.svg}{\insertsectionhead}
+\end{frame}
+
+\subsection{Forklaring}
+\begin{frame}{Adgangskontrol med RFID og elektronisk lås}
+\begin{columns}
+	\begin{column}{0.6\textwidth}
+		\begin{textBox}
+			\begin{itemize}
+				\item Det andet eksempel handler om RFID kontrol og operation af lås
+				\item Formålet er at kunne scanne RFID kort og administrere dem i et system
+				\item Dette system bliver sat op på en hjemmeside
+				\item Til dette vil der blive brugt:
+				\begin{itemize}
+					\item MFRC522
+					\begin{itemize}
+						\item RFID kortlæser
+						\item ISO/IEC 14443 A/MIFARE og NTAG kort
+					\end{itemize}
+					\item SARY DC12V
+					\begin{itemize}
+						\item Elektronisk lås
+						\item 12V 0,8A
+						\item Normally closed
+					\end{itemize}
+					\item WebSocket 
+					\begin{itemize}
+						\item Fuld duplex protokol til hurtig samtidig kommunikation mellem klient og server
+					\end{itemize}
+				\end{itemize}
+			\end{itemize}
+		\end{textBox}
+	\end{column}
+	\begin{column}{0.4\textwidth}
+		\centering
+		\captionsetup{format=tcbcaptionsmall}
+		\begin{columns}
+			\begin{column}{0.45\textwidth}
+				\begin{figure}[height=0.2\textheight]
+  					\includegraphics[height=0.2\textheight,keepaspectratio=true]{assets/pictures/rfid.png}
+  					\caption{MFRC522 RFID kortlæser}
+  					\label{fig:}
+				\end{figure}
+			\end{column}
+			\begin{column}{0.45\textwidth}
+				\begin{figure}[height=0.2\textheight]
+  					\includegraphics[height=0.2\textheight,keepaspectratio=true]{assets/pictures/12vdc-lock.png}
+  					\caption{SARY DC12V elektronisk lås}
+  					\label{fig:12vdc-lock}
+				\end{figure}
+			\end{column}
+		\end{columns}
+		\begin{columns}
+			\begin{column}{0.45\textwidth}
+				\begin{figure}[height=0.2\textheight]
+  					\includesvg[height=0.2\textheight]{assets/svg/websocket-logo.svg}
+  					\caption{WebSocket logo
+  					\captionline \textbf{Kilde:} \url{https://logodix.com/logos/1825947}
+  					\captionline \textbf{Licens:} Non-Commercial}
+  					\label{fig:websocket-logo}
+				\end{figure}
+			\end{column}
+		\end{columns}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\subsection{Eksempel}
+\begin{frame}{Adgangskontrol med RFID og elektronisk lås}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{textBox}
+		\begin{itemize}
+			\item Breadboard opstillingen ser således ud
+			\begin{itemize}
+				\item Et ESP32 board
+				\item Et MFRC522 modul
+				\item En N-type MOSFET
+				\item En flyback diode
+				\item En SARY 12V Lås
+				\item En 12V-5V DC-DC converter
+				\item En DC strømforsyning
+			\end{itemize}
+			\item Programmet gennemgår vi i fællesskab
+			%\captionbreak
+			\item Kildefiler kan hentes på:
+			\begin{itemize}
+				\item \tiny\url{https://github.com/iakop/IoT-Crashcourse-2/tree/master/examples/rfidlock}
+			\end{itemize}
+		\end{itemize}
+		\end{textBox}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\centering
+		\begin{figure}
+  			\includesvg[height=0.65\textheight]{assets/setups/rfidlock.svg}
+  			\caption{Breadboard setup med ESP32, MFRC522, MOSFET, SARY 12V, flyback diode, Buck converter}
+  			\label{fig:rfidlock}
+		\end{figure}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\section{Overvågning med PIR sensor og kamera}
+\begin{frame}
+	\sectiontitle{assets/setups/motioncam.svg}{\insertsectionhead}
+\end{frame}
+
+\subsection{Forklaring}
+\begin{frame}{Overvågning med PIR sensor og kamera}
+\begin{columns}
+	\begin{column}{0.6\textwidth}
+		\begin{textBox}
+			\begin{itemize}
+				\item Det tredje eksempel handler om automatisk overvågning vha IoT
+				\item Formålet er at ESP32-CAM skal tage billeder hver gang PIR sensoren opfanger bevægelse
+				\item Den vil gemme de seneste billeder i filsystemet
+				\item Dette system bliver sat op på en hjemmeside
+				\item Til dette vil der blive brugt:
+				\begin{itemize}
+					\item ESP32-CAM
+					\begin{itemize}
+						\item ESP32 med kamera
+						\item Ekstra PSRAM til billeder
+						\item Kræver eksternt UART modul
+					\end{itemize}
+					\item HC-SR501
+					\begin{itemize}
+						\item PIR sensor (Passive InfraRed)
+						\item Fanger bevægelse udfra infrarød belysning
+						\item 3,3V IO
+					\end{itemize}
+					\item WebSocket 
+					\begin{itemize}
+						\item Fuld duplex protokol til hurtig samtidig kommunikation mellem klient og server
+					\end{itemize}
+				\end{itemize}
+			\end{itemize}
+		\end{textBox}
+	\end{column}
+	\begin{column}{0.4\textwidth}
+		\centering
+		\captionsetup{format=tcbcaptionsmall}
+		\begin{columns}
+			\begin{column}{0.45\textwidth}
+				\begin{figure}[height=0.2\textheight]
+  					\includegraphics[height=0.2\textheight,keepaspectratio=true]{assets/pictures/esp32cam.png}
+  					\caption{ESP32-CAM}
+  					\label{fig:}
+				\end{figure}
+			\end{column}
+			\begin{column}{0.45\textwidth}
+				\begin{figure}[height=0.2\textheight]
+  					\includegraphics[height=0.2\textheight,keepaspectratio=true]{assets/pictures/hc-sr501.png}
+  					\caption{HC-SR501 PIR sensor}
+  					\label{fig:12vdc-lock}
+				\end{figure}
+			\end{column}
+		\end{columns}
+		\begin{columns}
+			\begin{column}{0.45\textwidth}
+				\begin{figure}[height=0.2\textheight]
+  					\includesvg[height=0.2\textheight]{assets/svg/websocket-logo.svg}
+  					\caption{WebSocket logo
+  					\captionline \textbf{Kilde:} \url{https://logodix.com/logos/1825947}
+  					\captionline \textbf{Licens:} Non-Commercial}
+  					\label{fig:websocket-logo}
+				\end{figure}
+			\end{column}
+		\end{columns}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\subsection{Eksempel}
+\begin{frame}{Overvågning med PIR sensor og kamera}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{textBox}
+		\begin{itemize}
+			\item Breadboard opstillingen ser således ud
+			\begin{itemize}
+				\item Et ESP32-CAM board
+				\item Et CP2101 UART modul
+				\item En trykknap til flashing
+				\item E1 HC-SR501 modul
+				\item En 12V-5V DC-DC converter
+				\item En DC strømforsyning
+			\end{itemize}
+			\item Programmet gennemgår vi i fællesskab
+			%\captionbreak
+			\item Kildefiler kan hentes på:
+			\begin{itemize}
+				\item \tiny\url{https://github.com/iakop/IoT-Crashcourse-2/tree/master/examples/motioncam}
+			\end{itemize}
+		\end{itemize}
+		\end{textBox}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\centering
+		\begin{figure}
+  			\includesvg[width=\textwidth]{assets/setups/motioncam.svg}
+  			\caption{Breadboard setup med ESP32-CAM, CP2101, trykknap, HC-SR501, og buck converter}
+  			\label{fig:motioncam}
+		\end{figure}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\end{document}
