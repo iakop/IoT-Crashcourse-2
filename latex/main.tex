@@ -157,7 +157,7 @@
 	\begin{column}{0.5\textwidth}
 		\begin{figure}
   			\roundedGfx{\textwidth}{assets/pictures/vscode-dl.png}
-  			\caption{\tthigh{Visual Studio Code} downloadsiden, har versioner til mange forskellige arkitekturer, typisk vil default knappen hente den korrekte installer}
+  			\caption{\tthigh{Visual Studio Code} downloadsiden har versioner til mange forskellige arkitekturer, typisk vil default knappen hente den korrekte installer}
   			\label{fig:vscode-dl}
 		\end{figure}
 	\end{column}
@@ -233,9 +233,9 @@
 				\begin{enumerate}
 					\item Open / Home
 					\begin{itemize}
-						\item Hovedsiden til PlatformIO, med quick access til og faner til resten af funktionerne
+						\item Hovedsiden til PlatformIO, med quick access og faner til resten af funktionerne
 					\end{itemize}
-					\item Projects \& Configurations \\/ Projects
+					\item Projects \& Configuration \\/ Projects
 					\begin{itemize}
 						\item Projektside, til at oprette og indstille softwareprojekter
 					\end{itemize}
@@ -250,12 +250,12 @@
 \end{columns}
 \end{frame}
 
-\section{Setup ESP32 Projekt i PlatformIO}
+\section{Setup af ESP32 projekt i PlatformIO}
 \begin{frame}
 	\sectiontitle{assets/svg/pio-logo.svg}{\insertsectionhead}
 \end{frame}
 
-\begin{frame}{Setup ESP32 Projekt i PlatformIO}
+\begin{frame}{Setup af ESP32 projekt i PlatformIO}
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 		\begin{textBox}
@@ -268,14 +268,14 @@
 	\begin{column}{0.5\textwidth}
 		\begin{figure}
   			\includegraphics[width=\textwidth,keepaspectratio=true]{assets/pictures/pio-project.png}
-  			\caption{\tthigh{Projects} fanen i PlatformIO, her kan projekter oprettes og redigeres i GUI'en}
+  			\caption{\tthigh{Projects} fanen i PlatformIO. Her kan projekter oprettes og redigeres i GUI'en}
   			\label{fig:pio-project}
 		\end{figure}
 	\end{column}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Setup ESP32 Projekt i PlatformIO}
+\begin{frame}{Setup af ESP32 projekt i PlatformIO}
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 		\begin{figure}
@@ -302,15 +302,15 @@
 					\begin{itemize}
 						\item \tthigh{Arduino}
 					\end{itemize}
-					\item Afslut ved at trykke \tthigh{Finish}
 				\end{itemize}
+				\item Afslut ved at trykke \tthigh{Finish}
 			\end{itemize}
 		\end{textBox}
 	\end{column}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Setup ESP32 Projekt i PlatformIO}
+\begin{frame}{Setup af ESP32 projekt i PlatformIO}
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 		\begin{textBox}
@@ -331,7 +331,7 @@
 					\end{itemize}
 					\item Upload
 					\begin{itemize}
-						\item Uploader imaget til hardwaren gennem en automatisk detekteret USB forbindelse
+						\item Uploader imaget til hardwaren gennem en automatisk detekteret USB/UART forbindelse
 					\end{itemize}
 					\item Monitor
 					\begin{itemize}
@@ -362,8 +362,8 @@
 \end{columns}
 \end{frame}
 
-\subsection{Tilføj Libraries til ESP32 Projekt}
-\begin{frame}{Tilføj Libraries til ESP32 Projekt}
+\subsection{Tilføj libraries til ESP32 projekt}
+\begin{frame}{Tilføj libraries til ESP32 projekt}
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 		\begin{figure}
@@ -376,7 +376,10 @@
 		\begin{textBox}
 			\begin{itemize}
 				\item For at tilføje eksterne libraries til ens projekt, kan man man under \tthigh{Libraries} fanen søge efter libraries
-				\item De kan fremsøges under \tthigh{Registry}
+				\begin{itemize}
+					\item De kan fremsøges under \tthigh{Registry}
+					\item Installerede libraries kan vises under \tthigh{Installed}
+				\end{itemize}
 				\item Herefter klik på det relevante library
 			\end{itemize}
 		\end{textBox}
@@ -384,7 +387,7 @@
 \end{columns}
 \end{frame}
 
-\begin{frame}{Tilføj Libraries til ESP32 Projekt}
+\begin{frame}{Tilføj libraries til ESP32 projekt}
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 		\begin{textBox}
@@ -409,7 +412,7 @@
 \end{columns}
 \end{frame}
 
-\begin{frame}{Tilføj Libraries til ESP32 Projekt}
+\begin{frame}{Tilføj libraries til ESP32 projekt}
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 		\begin{figure}
@@ -442,7 +445,7 @@
 	\begin{column}{0.6\textwidth}
 		\begin{textBox}
 			\begin{itemize}
-				\item Det første eksempel handler om opsamling og samling af data
+				\item Det første eksempel handler om opsamling og visning af data
 				\item Formålet er at samle datapunkter, sende dem til fælles broker, og vise dem
 				\item Til dette vil der blive brugt:
 				\begin{itemize}
@@ -466,7 +469,8 @@
 					\end{itemize}
 					\item LCD
 					\begin{itemize}
-						\item Kan vise data fra egen og andre enheder
+						\item Kan stryes over I2C
+						\item 16x2 karakterer
 					\end{itemize}
 					\item MQTT 
 					\begin{itemize}
@@ -537,7 +541,7 @@
 			%\captionbreak
 			\item Kildefiler kan hentes på:
 			\begin{itemize}
-				\item \tiny\url{https://github.com/iakop/IoT-Crashcourse-2/tree/master/examples/sensordata}
+				\item \tiny\url{https://download-directory.github.io?url=https://github.com/iakop/IoT-Crashcourse-2/tree/master/examples/sensordata}
 			\end{itemize}
 		\end{itemize}
 		\end{textBox}
@@ -748,7 +752,7 @@
 			%\captionbreak
 			\item Kildefiler kan hentes på:
 			\begin{itemize}
-				\item \tiny\url{https://github.com/iakop/IoT-Crashcourse-2/tree/master/examples/rfidlock}
+				\item \tiny\url{https://download-directory.github.io?url=https://github.com/iakop/IoT-Crashcourse-2/tree/master/examples/rfidlock}
 			\end{itemize}
 		\end{itemize}
 		\end{textBox}
@@ -775,7 +779,7 @@
 	\begin{column}{0.6\textwidth}
 		\begin{textBox}
 			\begin{itemize}
-				\item Det tredje eksempel handler om automatisk overvågning vha IoT
+				\item Det tredje eksempel handler om automatisk overvågning
 				\item Formålet er at ESP32-CAM skal tage billeder hver gang PIR sensoren opfanger bevægelse
 				\item Den vil gemme de seneste billeder i filsystemet
 				\item Dette system bliver sat op på en hjemmeside
@@ -846,7 +850,7 @@
 				\item Et ESP32-CAM board
 				\item Et CP2101 UART modul
 				\item En trykknap til flashing
-				\item E1 HC-SR501 modul
+				\item Et HC-SR501 modul
 				\item En 12V-5V DC-DC converter
 				\item En DC strømforsyning
 			\end{itemize}
@@ -854,7 +858,7 @@
 			%\captionbreak
 			\item Kildefiler kan hentes på:
 			\begin{itemize}
-				\item \tiny\url{https://github.com/iakop/IoT-Crashcourse-2/tree/master/examples/motioncam}
+				\item \tiny\url{https://download-directory.github.io?url=https://github.com/iakop/IoT-Crashcourse-2/tree/master/examples/motioncam}
 			\end{itemize}
 		\end{itemize}
 		\end{textBox}
